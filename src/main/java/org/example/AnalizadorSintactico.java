@@ -19,12 +19,14 @@ public class AnalizadorSintactico {
         try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
             String linea;
             while ((linea = br.readLine()) != null) {
+                System.out.println("*******************************************");
                 if (validarCadena(linea)) {
                     System.out.println("La cadena \"" + linea + "\" es válida.");
                 } else {
                     System.out.println("La cadena \"" + linea + "\" no es válida.");
                 }
                 mostrarArbolDerivacion(linea);
+                mostrarTablaTransiciones(linea);
             }
         } catch (IOException e) {
             System.out.println("Error: No se encontró el archivo prueba.txt, por favor verifique la ruta.");
@@ -88,6 +90,64 @@ public class AnalizadorSintactico {
             }
         }
     }
+
+    public void mostrarTablaTransiciones(String cadena) {
+        Estado estadoActual = estadoInicial;
+        List<String[]> transiciones = new ArrayList<>();
+        boolean esValida = true;
+
+        for (char c : cadena.toCharArray()) {
+            boolean transicionEncontrada = false;
+            for (Arista arista : grafo.getAristas()) {
+                if (arista.getEstadoOrigen().equals(estadoActual) && arista.getCondicion().equals(String.valueOf(c))) {
+                    String[] fila = {estadoActual.getNombre(), arista.getCondicion(), arista.getEstadoDestino().getNombre()};
+                    transiciones.add(fila);
+                    estadoActual = arista.getEstadoDestino();
+                    transicionEncontrada = true;
+                    break;
+                }
+            }
+            if (!transicionEncontrada) {
+                // Si no se encuentra una transición válida, agregamos la fila con "Error"
+                String[] filaError = {estadoActual.getNombre(), String.valueOf(c), "Error"};
+                transiciones.add(filaError);
+                esValida = false;
+                break;
+            }
+        }
+
+        // Definir el ancho de las columnas
+        int anchoColumna = 20;
+        String separador = "+" + "-".repeat(anchoColumna) + "+" + "-".repeat(anchoColumna) + "+" + "-".repeat(anchoColumna) + "+";
+
+        // Mostrar la tabla con formato
+        System.out.println("Tabla de transiciones:");
+        System.out.println(separador);
+        System.out.format("|%-" + anchoColumna + "s|%-" + anchoColumna + "s|%-" + anchoColumna + "s|%n",
+                centrarTexto("Estado Inicial", anchoColumna),
+                centrarTexto("Valor de Transición", anchoColumna),
+                centrarTexto("Estado Final", anchoColumna));
+        System.out.println(separador);
+        for (String[] fila : transiciones) {
+            System.out.format("|%-" + anchoColumna + "s|%-" + anchoColumna + "s|%-" + anchoColumna + "s|%n",
+                    centrarTexto(fila[0], anchoColumna),
+                    centrarTexto(fila[1], anchoColumna),
+                    centrarTexto(fila[2], anchoColumna));
+            System.out.println(separador);
+        }
+    }
+
+    // Método auxiliar para centrar el texto
+    private String centrarTexto(String texto, int ancho) {
+        if (texto.length() >= ancho) {
+            return texto;  // Si el texto es más largo que el ancho, se deja igual
+        }
+        int espacios = (ancho - texto.length()) / 2;
+        return " ".repeat(espacios) + texto + " ".repeat(ancho - texto.length() - espacios);
+    }
+
+
+
 }
 
 
