@@ -11,6 +11,7 @@ public class Main {
         analizador.leerArchivo("src/main/resources/prueba.txt");
     }
 
+
     private static AnalizadorSintactico GrafoConstructor(Grafo grafo){
         // Crear estados
         Estado estado0 = new Estado(0, "q0");
