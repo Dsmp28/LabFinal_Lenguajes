@@ -12,6 +12,7 @@ public class Main {
     }
 
 
+
     private static AnalizadorSintactico GrafoConstructor(Grafo grafo){
         // Crear estados
         Estado estado0 = new Estado(0, "q0");
