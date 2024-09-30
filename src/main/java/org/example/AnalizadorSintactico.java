@@ -145,9 +145,6 @@ public class AnalizadorSintactico {
         int espacios = (ancho - texto.length()) / 2;
         return " ".repeat(espacios) + texto + " ".repeat(ancho - texto.length() - espacios);
     }
-
-
-
 }
 
 
