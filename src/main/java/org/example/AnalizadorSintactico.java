@@ -92,6 +92,15 @@ public class AnalizadorSintactico {
                 }
             }
             if (!transicionEncontrada) {
+                for (Arista arista : grafo.getAristas()) {
+                    if (arista.getEstadoOrigen().equals(estadoActual) && arista.getEstadoOrigen().esEpsilon()) {
+                        derivaciones.add("ε -> " + estadoActual.getNombre());
+                        transicionEncontrada = true;
+                        break;
+                    }
+                }
+            }
+            if (!transicionEncontrada) {
                 derivaciones.add("ERROR");
                 break;
             }
@@ -118,7 +127,6 @@ public class AnalizadorSintactico {
     public void mostrarTablaTransiciones(String cadena) {
         Estado estadoActual = estadoInicial;
         List<String[]> transiciones = new ArrayList<>();
-        boolean esValida = true;
 
         for (char c : cadena.toCharArray()) {
             boolean transicionEncontrada = false;
@@ -131,11 +139,22 @@ public class AnalizadorSintactico {
                     break;
                 }
             }
+
+            if (!transicionEncontrada) {
+                for (Arista arista : grafo.getAristas()) {
+                    if (arista.getEstadoOrigen().equals(estadoActual) && arista.getEstadoOrigen().esEpsilon()) {
+                        String[] fila = {estadoActual.getNombre(), "ε", estadoActual.getNombre()};
+                        transiciones.add(fila);
+                        transicionEncontrada = true;
+                        break;
+                    }
+                }
+            }
+
             if (!transicionEncontrada) {
                 // Si no se encuentra una transición válida, agregamos la fila con "Error"
                 String[] filaError = {estadoActual.getNombre(), String.valueOf(c), "Error"};
                 transiciones.add(filaError);
-                esValida = false;
                 break;
             }
         }
