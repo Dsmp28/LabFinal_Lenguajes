@@ -11,25 +11,37 @@ public class AnalizadorSintactico {
     private Grafo grafo;
     private Estado estadoInicial;
 
+    private int contadorValido;
+
+    private int contadorInvalido;
+
     //Stacks
     public AnalizadorSintactico(Grafo grafo, Estado estadoInicial) {
         this.grafo = grafo;
         this.estadoInicial = estadoInicial;
+        this.contadorValido = 0;
+        this.contadorInvalido = 0;
     }
 
     public void leerArchivo(String rutaArchivo) {
         try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
             String linea;
             while ((linea = br.readLine()) != null) {
-                System.out.println("*******************************************");
+                System.out.println("\n*******************************************");
                 if (validarCadena(linea)) {
-                    System.out.println("La cadena \"" + linea + "\" es válida.");
+                    System.out.println("La cadena \"" + linea + "\" es válida.\n");
+                    contadorValido++;
                 } else {
-                    System.out.println("La cadena \"" + linea + "\" no es válida.");
+                    System.out.println("La cadena \"" + linea + "\" no es válida.\n");
+                    contadorInvalido++;
                 }
                 mostrarArbolDerivacion(linea);
+                System.out.println();
                 mostrarTablaTransiciones(linea);
             }
+            System.out.println("\n*******************************************");
+            System.out.println("Número de cadenas válidas: " + contadorValido);
+            System.out.println("Número de cadenas inválidas: " + contadorInvalido);
 
         } catch (IOException e) {
             System.out.println("Error: No se encontró el archivo prueba.txt, por favor verifique la ruta.");
@@ -57,10 +69,9 @@ public class AnalizadorSintactico {
 
             if (!transicionEncontrada) {
                 if (estadoActual.esEpsilon()) {
-                    transicionEncontrada = true;
                     stackEpsilon.push(c);
                 }
-                else if (!transicionEncontrada) {
+                else {
                     System.out.println("Error: No se encontró una transición válida para el carácter '" + c + "' desde el estado " + estadoActual.getNombre());
                     esValida = false;
                     break;
@@ -69,10 +80,10 @@ public class AnalizadorSintactico {
         }
         System.out.println("Stack de caracteres válidos para la cadena \"" + cadena + "\": ");
         System.out.println(stackCaracteresValidos);
-        System.out.println("Stack de estados válidos para la cadena \"" + cadena + "\": ");
+        System.out.println("\nStack de estados válidos para la cadena \"" + cadena + "\": ");
         System.out.println(stackEstadosValidos);
-        System.out.println("Stack de caracteres epsilon para la cadena \"" + cadena + "\": ");
-        System.out.println(stackEpsilon);
+        System.out.println("\nStack de caracteres epsilon para la cadena \"" + cadena + "\": ");
+        System.out.println(stackEpsilon + "\n");
         return esValida;
     }
 
@@ -114,7 +125,11 @@ public class AnalizadorSintactico {
         if (indice < derivaciones.size()) {
             String nodo = derivaciones.get(indice);
             System.out.println(prefijo + (ultimo ? "└── " : "├── ") + nodo);
-            prefijo += (ultimo ? "    " : "│   ");
+            if (indice > 0){
+                prefijo += (ultimo ? "         " : "│        ");
+            }else {
+                prefijo += (ultimo ? "    " : "│   ");
+            }
 
             if (!nodo.equals("ERROR") && indice + 1 < derivaciones.size()) {
                 imprimirDerivacion(derivaciones, indice + 1, prefijo, indice + 2 == derivaciones.size());
