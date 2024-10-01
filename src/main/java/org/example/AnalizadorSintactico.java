@@ -5,10 +5,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class AnalizadorSintactico {
     private Grafo grafo;
     private Estado estadoInicial;
+
+    //Stacks
+    private Stack<Character> stackEpsilon = new Stack<Character>();
 
     public AnalizadorSintactico(Grafo grafo, Estado estadoInicial) {
         this.grafo = grafo;
@@ -27,7 +31,9 @@ public class AnalizadorSintactico {
                 }
                 mostrarArbolDerivacion(linea);
                 mostrarTablaTransiciones(linea);
+                mostrarStackEpsilon();
             }
+
         } catch (IOException e) {
             System.out.println("Error: No se encontró el archivo prueba.txt, por favor verifique la ruta.");
         }
@@ -37,19 +43,38 @@ public class AnalizadorSintactico {
         Estado estadoActual = estadoInicial;
         for (char c : cadena.toCharArray()) {
             boolean transicionEncontrada = false;
+
             for (Arista arista : grafo.getAristas()) {
+
                 if (arista.getEstadoOrigen().equals(estadoActual) && arista.getCondicion().equals(String.valueOf(c))) {
                     estadoActual = arista.getEstadoDestino();
                     transicionEncontrada = true;
                     break;
                 }
             }
+
             if (!transicionEncontrada) {
-                System.out.println("Error: No se encontró una transición válida para el carácter '" + c + "' desde el estado " + estadoActual.getNombre());
-                return false;
+                if (estadoActual.esEpsilon()) {
+                    //Meter al stack de las epsilon
+                    transicionEncontrada = true;
+                    stackEpsilon.push(c);
+                }
+                else if (!transicionEncontrada) {
+                    System.out.println("Error: No se encontró una transición válida para el carácter '" + c + "' desde el estado " + estadoActual.getNombre());
+                    return false;
+                }
             }
+
+
         }
         return true;
+    }
+
+    public void mostrarStackEpsilon(){
+        System.out.println("Stack de epsilon: ");
+        for (int i = 0; i < stackEpsilon.size(); i++) {
+            System.out.println(stackEpsilon.get(i));
+        }
     }
 
     public void mostrarArbolDerivacion(String cadena) {

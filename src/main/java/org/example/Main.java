@@ -15,11 +15,11 @@ public class Main {
 
     private static AnalizadorSintactico GrafoConstructor(Grafo grafo){
         // Crear estados
-        Estado estado0 = new Estado(0, "q0");
-        Estado estado1 = new Estado(1, "q1");
-        Estado estado2 = new Estado(2, "q2");
-        Estado estado3 = new Estado(3, "q3");
-        Estado estado4 = new Estado(4, "q4");
+        Estado estado0 = new Estado(0, "q0", true);
+        Estado estado1 = new Estado(1, "q1", true);
+        Estado estado2 = new Estado(2, "q2", false);
+        Estado estado3 = new Estado(3, "q3", false);
+        Estado estado4 = new Estado(4, "q4", false);
 
         // Agregar estados al grafo
         grafo.agregarEstado(estado0);
