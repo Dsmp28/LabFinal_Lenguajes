@@ -12,8 +12,6 @@ public class AnalizadorSintactico {
     private Estado estadoInicial;
 
     //Stacks
-    private Stack<Character> stackEpsilon = new Stack<Character>();
-
     public AnalizadorSintactico(Grafo grafo, Estado estadoInicial) {
         this.grafo = grafo;
         this.estadoInicial = estadoInicial;
@@ -31,7 +29,6 @@ public class AnalizadorSintactico {
                 }
                 mostrarArbolDerivacion(linea);
                 mostrarTablaTransiciones(linea);
-                mostrarStackEpsilon();
             }
 
         } catch (IOException e) {
@@ -40,41 +37,43 @@ public class AnalizadorSintactico {
     }
 
     public boolean validarCadena(String cadena) {
+        Stack<Character> stackCaracteresValidos = new Stack<>();
+        Stack<Character> stackEpsilon = new Stack<>();
+        Stack<String> stackEstadosValidos = new Stack<>();
+
         Estado estadoActual = estadoInicial;
+        boolean esValida = true;
         for (char c : cadena.toCharArray()) {
             boolean transicionEncontrada = false;
-
             for (Arista arista : grafo.getAristas()) {
-
                 if (arista.getEstadoOrigen().equals(estadoActual) && arista.getCondicion().equals(String.valueOf(c))) {
                     estadoActual = arista.getEstadoDestino();
                     transicionEncontrada = true;
+                    stackCaracteresValidos.push(c);
+                    stackEstadosValidos.push(estadoActual.getNombre());
                     break;
                 }
             }
 
             if (!transicionEncontrada) {
                 if (estadoActual.esEpsilon()) {
-                    //Meter al stack de las epsilon
                     transicionEncontrada = true;
                     stackEpsilon.push(c);
                 }
                 else if (!transicionEncontrada) {
                     System.out.println("Error: No se encontró una transición válida para el carácter '" + c + "' desde el estado " + estadoActual.getNombre());
-                    return false;
+                    esValida = false;
+                    break;
                 }
             }
-
-
         }
-        return true;
-    }
-
-    public void mostrarStackEpsilon(){
-        System.out.println("Stack de epsilon: ");
-        for (int i = 0; i < stackEpsilon.size(); i++) {
-            System.out.println(stackEpsilon.get(i));
-        }
+        System.out.println("Stack de caracteres válidos para la cadena \"" + cadena + "\": ");
+        System.out.println(stackCaracteresValidos);
+        System.out.println("Stack de estados válidos para la cadena \"" + cadena + "\": ");
+        System.out.println(stackEstadosValidos);
+        System.out.println("Stack de caracteres epsilon para la cadena \"" + cadena + "\": ");
+        System.out.println(stackEpsilon);
+        return esValida;
     }
 
     public void mostrarArbolDerivacion(String cadena) {
