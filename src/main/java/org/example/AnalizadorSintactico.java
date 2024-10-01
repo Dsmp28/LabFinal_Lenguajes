@@ -5,22 +5,22 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Stack;
 
 public class AnalizadorSintactico {
     private Grafo grafo;
     private Estado estadoInicial;
 
-    private int contadorValido;
-
-    private int contadorInvalido;
+    private List<String> cadenasValidas;
+    private List<String> cadenasInvalidas;
 
     //Stacks
     public AnalizadorSintactico(Grafo grafo, Estado estadoInicial) {
         this.grafo = grafo;
         this.estadoInicial = estadoInicial;
-        this.contadorValido = 0;
-        this.contadorInvalido = 0;
+        this.cadenasValidas = new ArrayList<>();
+        this.cadenasInvalidas = new ArrayList<>();
     }
 
     public void leerArchivo(String rutaArchivo) {
@@ -30,18 +30,29 @@ public class AnalizadorSintactico {
                 System.out.println("\n*******************************************");
                 if (validarCadena(linea)) {
                     System.out.println("La cadena \"" + linea + "\" es válida.\n");
-                    contadorValido++;
+                    cadenasValidas.add(linea);
                 } else {
                     System.out.println("La cadena \"" + linea + "\" no es válida.\n");
-                    contadorInvalido++;
+                    cadenasInvalidas.add(linea);
                 }
                 mostrarArbolDerivacion(linea);
                 System.out.println();
                 mostrarTablaTransiciones(linea);
+                Scanner scanner = new Scanner(System.in);
+
+                //Aqui va la parte de limpiar consola
+                System.out.println("\nPresione Enter para continuar...");
+                scanner.nextLine();
             }
             System.out.println("\n*******************************************");
-            System.out.println("Número de cadenas válidas: " + contadorValido);
-            System.out.println("Número de cadenas inválidas: " + contadorInvalido);
+            System.out.println("Cadenas válidas: " + cadenasValidas.size());
+            for (String cadena : cadenasValidas) {
+                System.out.println(cadena);
+            }
+            System.out.println("\nCadenas inválidas: " + cadenasInvalidas.size());
+            for (String cadena : cadenasInvalidas) {
+                System.out.println(cadena);
+            }
 
         } catch (IOException e) {
             System.out.println("Error: No se encontró el archivo prueba.txt, por favor verifique la ruta.");
@@ -72,7 +83,7 @@ public class AnalizadorSintactico {
                     stackEpsilon.push(c);
                 }
                 else {
-                    System.out.println("Error: No se encontró una transición válida para el carácter '" + c + "' desde el estado " + estadoActual.getNombre());
+                    System.out.println("Error: No se encontró una transición válida para el carácter '" + c + "' desde el estado " + estadoActual.getNombre() + "\n");
                     esValida = false;
                     break;
                 }
