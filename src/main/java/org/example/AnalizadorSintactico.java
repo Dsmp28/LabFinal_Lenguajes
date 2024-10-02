@@ -43,6 +43,7 @@ public class AnalizadorSintactico {
                 //Aqui va la parte de limpiar consola
                 System.out.println("\nPresione Enter para continuar...");
                 scanner.nextLine();
+                ClearConsole();
             }
             System.out.println("\n*******************************************");
             System.out.println("Cadenas válidas: " + cadenasValidas.size());
@@ -58,7 +59,24 @@ public class AnalizadorSintactico {
             System.out.println("Error: No se encontró el archivo prueba.txt, por favor verifique la ruta.");
         }
     }
+    public static void ClearConsole(){
+        try{
+            String operatingSystem = System.getProperty("os.name"); //Check the current operating system
 
+            if(operatingSystem.contains("Windows")){
+                ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "cls");
+                Process startProcess = pb.inheritIO().start();
+                startProcess.waitFor();
+            } else {
+                ProcessBuilder pb = new ProcessBuilder("clear");
+                Process startProcess = pb.inheritIO().start();
+
+                startProcess.waitFor();
+            }
+        }catch(Exception e){
+            System.out.println(e);
+        }
+    }
     public boolean validarCadena(String cadena) {
         Stack<Character> stackCaracteresValidos = new Stack<>();
         Stack<Character> stackEpsilon = new Stack<>();

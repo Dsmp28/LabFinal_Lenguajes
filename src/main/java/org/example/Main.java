@@ -8,7 +8,7 @@ public class Main {
         AnalizadorSintactico analizador = GrafoConstructor(grafo);
 
         // Leer y validar cadenas desde un archivo
-        analizador.leerArchivo("src/main/resources/prueba.txt");
+        analizador.leerArchivo("C:/Users/rivaa/IdeaProjects/Lab2_Lenguajes/src/main/resources/prueba.txt");
     }
 
 
