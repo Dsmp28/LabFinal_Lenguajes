@@ -77,44 +77,47 @@ public class AnalizadorSintactico {
             System.out.println(e);
         }
     }
+
     public boolean validarCadena(String cadena) {
-        Stack<Character> stackCaracteresValidos = new Stack<>();
-        Stack<Character> stackEpsilon = new Stack<>();
-        Stack<String> stackEstadosValidos = new Stack<>();
+        // Dividir la cadena en dos cintas intercaladas
+        StringBuilder cinta1 = new StringBuilder();
+        StringBuilder cinta2 = new StringBuilder();
+        for (int i = 0; i < cadena.length(); i++) {
+            if (i % 2 == 0) {
+                cinta1.append(cadena.charAt(i));
+            } else {
+                cinta2.append(cadena.charAt(i));
+            }
+        }
 
         Estado estadoActual = estadoInicial;
         boolean esValida = true;
+
+        // Proceso de validación original
         for (char c : cadena.toCharArray()) {
             boolean transicionEncontrada = false;
             for (Arista arista : grafo.getAristas()) {
                 if (arista.getEstadoOrigen().equals(estadoActual) && arista.getCondicion().equals(String.valueOf(c))) {
                     estadoActual = arista.getEstadoDestino();
                     transicionEncontrada = true;
-                    stackCaracteresValidos.push(c);
-                    stackEstadosValidos.push(estadoActual.getNombre());
                     break;
                 }
             }
 
             if (!transicionEncontrada) {
-                if (estadoActual.esEpsilon()) {
-                    stackEpsilon.push(c);
-                }
-                else {
-                    System.out.println("Error: No se encontró una transición válida para el carácter '" + c + "' desde el estado " + estadoActual.getNombre() + "\n");
-                    esValida = false;
-                    break;
-                }
+                System.out.println("Error: No se encontró una transición válida para el carácter '" + c + "' desde el estado " + estadoActual.getNombre() + "\n");
+                esValida = false;
+                break;
             }
         }
-        System.out.println("Stack de caracteres válidos para la cadena \"" + cadena + "\": ");
-        System.out.println(stackCaracteresValidos);
-        System.out.println("\nStack de estados válidos para la cadena \"" + cadena + "\": ");
-        System.out.println(stackEstadosValidos);
-        System.out.println("\nStack de caracteres epsilon para la cadena \"" + cadena + "\": ");
-        System.out.println(stackEpsilon + "\n");
+        // Imprimir las dos cintas al final del proceso
+        System.out.println("Cinta 1: " + cinta1);
+        System.out.println("Cinta 2: " + cinta2);
+        System.out.println();
+
         return esValida;
     }
+
 
     public void mostrarArbolDerivacion(String cadena) {
         Estado estadoActual = estadoInicial;
@@ -129,15 +132,6 @@ public class AnalizadorSintactico {
                     estadoActual = arista.getEstadoDestino();
                     transicionEncontrada = true;
                     break;
-                }
-            }
-            if (!transicionEncontrada) {
-                for (Arista arista : grafo.getAristas()) {
-                    if (arista.getEstadoOrigen().equals(estadoActual) && arista.getEstadoOrigen().esEpsilon()) {
-                        derivaciones.add("ε -> " + estadoActual.getNombre());
-                        transicionEncontrada = true;
-                        break;
-                    }
                 }
             }
             if (!transicionEncontrada) {
@@ -181,17 +175,6 @@ public class AnalizadorSintactico {
                     estadoActual = arista.getEstadoDestino();
                     transicionEncontrada = true;
                     break;
-                }
-            }
-
-            if (!transicionEncontrada) {
-                for (Arista arista : grafo.getAristas()) {
-                    if (arista.getEstadoOrigen().equals(estadoActual) && arista.getEstadoOrigen().esEpsilon()) {
-                        String[] fila = {estadoActual.getNombre(), "ε", estadoActual.getNombre()};
-                        transiciones.add(fila);
-                        transicionEncontrada = true;
-                        break;
-                    }
                 }
             }
 
