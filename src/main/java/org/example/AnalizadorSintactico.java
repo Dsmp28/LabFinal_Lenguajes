@@ -114,6 +114,9 @@ public class AnalizadorSintactico {
         System.out.println("Cinta 1: " + cinta1);
         System.out.println("Cinta 2: " + cinta2);
         System.out.println();
+        System.out.println("Leido de Derecha a izquierda: {" + cinta1 + "} {" + cinta2 + "}");
+        System.out.println("Leido de Derecha a izquierda: {" + cinta1.reverse() + "} {" + cinta2.reverse() + "}");
+        System.out.println();
 
         return esValida;
     }

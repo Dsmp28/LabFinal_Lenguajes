@@ -1,3 +1,10 @@
-abaab*#ab*
-abaab
-()abaab
+abaa*#
+aba*##
+abaaaa
+aba*#bb
+abaa*#aa
+aabaa*#
+abaa#ab
+aba(ab
+abaa*ba
+ababba*p
